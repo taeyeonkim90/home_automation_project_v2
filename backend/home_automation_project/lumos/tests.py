@@ -1,3 +1,5 @@
+from crontab import CronTab
+
 from django.test import TestCase
 from django.utils.six import BytesIO
 from rest_framework.parsers import JSONParser
@@ -5,7 +7,7 @@ from rest_framework.renderers import JSONRenderer
 
 
 from .models import AlarmSchedule, AlarmScheduleSerializer
-from .services import AlarmService
+from .services import AlarmService, CronJobService
 
 
 class JSONGenerator:
@@ -149,3 +151,28 @@ class AlarmSericeTestCase(TestCase):
         # negative case
         result = self.alarm_service.delete(target_id)
         self.assertFalse(result.success)
+
+
+class CronJobServiceTestCase(TestCase):
+    def setUp(self):
+        self.cron_service = CronJobService()
+
+    def tearDown(self):
+        cron = CronTab(user=True)
+        cron.remove_all()
+        cron.write()
+
+    def test_update_all(self):
+        model1 = AlarmSchedule()
+        model2 = AlarmSchedule()
+        model1.save()
+        model2.save()
+        self.cron_service.update_all()
+        # self.cron_service.print_all()
+
+        # check jobs were added
+        cron = CronTab(user=True)
+        total_jobs = 0
+        for job in cron:
+            total_jobs += 1
+        self.assertEqual(total_jobs, 2)
