@@ -5,6 +5,7 @@ from rest_framework.renderers import JSONRenderer
 
 
 from .models import AlarmSchedule, AlarmScheduleSerializer
+from .services import AlarmService
 
 
 class JSONGenerator:
@@ -56,17 +57,95 @@ class AlarmTestCase(TestCase):
 
 
 class AlarmSericeTestCase(TestCase):
+    def setUp(self):
+        self.alarm_service = AlarmService()
+
     def test_create(self):
-        pass
+        """ Tests AlarmService.create() """
+        # positive case
+        target_string = "positive case"
+        json = JSONGenerator.get_alarm(command=target_string)
+        data = JSONGenerator.json_to_data(json)
+        result = self.alarm_service.create(data)
+        self.assertTrue(result.success)
+
+        target_model = AlarmSchedule.objects.get(command=target_string)
+        self.assertEqual(target_string, target_model.command)
+
+        # negative case
+        target_string = "negative case"
+        json = JSONGenerator.get_alarm(hour="25", command=target_string)
+        data = JSONGenerator.json_to_data(json)
+        result = self.alarm_service.create(data)
+        self.assertFalse(result.success)
+
+        try:
+            target_model = AlarmSchedule.objects.get(command=target_string)
+            self.fail()
+        except AlarmSchedule.DoesNotExist:
+            pass
 
     def test_read(self):
-        pass
+        """ Tests AlarmService.read() """
+        # positive case
+        model = AlarmSchedule()
+        model.save()
+        target_id = model.id
+
+        result = self.alarm_service.read(target_id)
+        self.assertTrue(result.success)
+        self.assertEqual(result.data["id"], target_id)
+
+        # negative case
+        result = self.alarm_service.read(3000)
+        self.assertFalse(result.success)
 
     def test_read_all(self):
-        pass
+        # empty case
+        result = self.alarm_service.read_all()
+        self.assertEqual(len(result.data), 0)
+
+        # create two instances
+        model_1 = AlarmSchedule()
+        model_2 = AlarmSchedule()
+        model_1.save()
+        model_2.save()
+
+        result = self.alarm_service.read_all()
+        self.assertTrue(result.success)
+        self.assertEqual(len(result.data), 2)
 
     def test_update(self):
-        pass
+        original_command = "foo"
+        model = AlarmSchedule(command=original_command)
+        model.save()
+        self.assertEqual(original_command, model.command)
+
+        # positive case
+        target_id = model.id
+        new_command = "bar"
+        json = JSONGenerator.get_alarm(command=new_command)
+        data = JSONGenerator.json_to_data(json)
+        result = self.alarm_service.update(data, target_id)
+
+        self.assertTrue(result.success)
+        self.assertNotEqual(original_command, result.data["command"])
+
+        # negative case
+        result = self.alarm_service.update(data, 9999)
+        self.assertFalse(result.success)
 
     def test_delete(self):
-        pass
+        model = AlarmSchedule()
+        model.save()
+        target_id = model.id
+        target_model = AlarmSchedule.objects.get(id=target_id)
+        self.assertEqual(target_model.id, target_id)
+
+        # positive case
+        result = self.alarm_service.delete(target_id)
+        self.assertTrue(result.success)
+
+        # negative case
+        result = self.alarm_service.delete(target_id)
+        self.assertFalse(result.success)

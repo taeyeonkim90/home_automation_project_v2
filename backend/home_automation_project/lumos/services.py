@@ -4,7 +4,11 @@ from .models import AlarmSchedule, AlarmScheduleSerializer
 class CronJobService:
     """ A service provider for cron job management """
 
-    pass
+    # create a job
+
+    # update a job
+
+    # delete a job
 
 
 class CRUDResult:
@@ -15,7 +19,10 @@ class CRUDResult:
 
 
 class AlarmService:
-    """ Provides CRUD managements for AlarmSchedule models """
+    """
+    Provides CRUD operations for AlarmSchedule
+    Consumes JSON, and outputs serialized data
+    """
 
     def _get_object(self, pk):
         try:
@@ -24,6 +31,7 @@ class AlarmService:
             raise
 
     def create(self, data):
+        """ (json) -> Serialized model """
         serializer = AlarmScheduleSerializer(data=data)
         if serializer.is_valid():
             alarm = serializer.save()
@@ -32,11 +40,13 @@ class AlarmService:
         return CRUDResult(False, message="Provided data had invalid format")
 
     def read_all(self):
+        """ () -> List(Serialized model) """
         alarms = AlarmSchedule.objects.all()
         serializer = AlarmScheduleSerializer(alarms, many=True)
         return CRUDResult(True, serializer.data)
 
     def read(self, pk):
+        """ (int) -> Serialized model """
         try:
             alarm = self._get_object(pk)
             serializer = AlarmScheduleSerializer(alarm)
@@ -47,6 +57,7 @@ class AlarmService:
                                               the database")
 
     def update(self, data, pk):
+        """ """
         try:
             alarm = self._get_object(pk)
             serializer = AlarmScheduleSerializer(alarm, data=data)
@@ -62,6 +73,7 @@ class AlarmService:
                                               the database")
 
     def delete(self, pk):
+        """ """
         try:
             alarm = self._get_object(pk)
             alarm.delete()
