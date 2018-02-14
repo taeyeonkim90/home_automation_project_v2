@@ -1,14 +1,39 @@
+from crontab import CronTab
+
 from .models import AlarmSchedule, AlarmScheduleSerializer
 
 
 class CronJobService:
     """ A service provider for cron job management """
+    def __init__(self):
+        self.cron = CronTab(user=True)
 
-    # create a job
+    def update_all(self):
+        self.cron.remove_all()
+        self._create_jobs()
+        self.cron.write()
 
-    # update a job
+    def clear_all(self):
+        self.cron.remove_all()
+        self.cron.write()
 
-    # delete a job
+    def print_all(self):
+        for job in self.cron:
+            print(job)
+
+    def _create_jobs(self):
+        alarms = AlarmSchedule.objects.all()
+        for alarm in alarms:
+            time = self._serialize_alarm_time(alarm)
+            job = self.cron.new(command=alarm.command, comment=str(alarm.id))
+            job.setall(time)
+
+    def _serialize_alarm_time(self, model):
+        template = "{} {} * * {}"
+        serialized = template.format(model.minute,
+                                     model.hour,
+                                     model.day_of_week)
+        return serialized
 
 
 class CRUDResult:
