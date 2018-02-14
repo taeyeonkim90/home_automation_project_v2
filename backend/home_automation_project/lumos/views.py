@@ -28,6 +28,7 @@ class AlarmList(AlarmView):
     def post(self, request, format=None):
         result = self.alarm_service.create(request.data)
         if result.success:
+            self.cron_service.update_all()
             return Response(result.data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -45,11 +46,13 @@ class AlarmDetail(AlarmView):
     def put(self, request, pk, format=None):
         result = self.alarm_service.update(request.data, pk)
         if result.success:
+            self.cron_service.update_all()
             return Response(result.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk, format=None):
         result = self.alarm_service.delete(pk)
         if result.success:
+            self.cron_service.update_all()
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
