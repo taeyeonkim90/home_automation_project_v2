@@ -57,7 +57,7 @@ class AlarmScheduleSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         instance.minute = validated_data.get("minute", instance.minute)
         instance.hour = validated_data.get("hour", instance.hour)
-        instance.day_of_week = validated_data.get("day_of_week", 
+        instance.day_of_week = validated_data.get("day_of_week",
                                                   instance.day_of_week)
         instance.command = validated_data.get("command", instance.command)
         instance.save()

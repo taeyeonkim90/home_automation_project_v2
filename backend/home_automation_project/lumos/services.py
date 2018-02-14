@@ -54,7 +54,8 @@ class AlarmService:
                 alarm = serializer.save()
                 serializer = AlarmScheduleSerializer(alarm)
                 return CRUDResult(True, serializer.data)
-            return CRUDResult(False, message="Provided data had invalid format")
+            return CRUDResult(False,
+                              message="Provided data had invalid format")
         except AlarmSchedule.DoesNotExist:
             return CRUDResult(False, message="No entries with the provided \
                                               primary key was found from \
