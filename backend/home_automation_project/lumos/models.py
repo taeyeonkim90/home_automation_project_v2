@@ -2,18 +2,20 @@ from django.db import models
 from rest_framework import serializers
 
 
+ALARM_SCRIPT_PATH = "ls"
+
+
 class AlarmSchedule(models.Model):
     """
     Cron-based representation of a scheduled task
     minute (0 - 59)
     hour (0 - 23)
     day of week (0 - 6) (Sunday to Saturday;
-    
     """
     minute = models.CharField(default="*", max_length=100)
     hour = models.CharField(default="*", max_length=100)
     day_of_week = models.CharField(default="*", max_length=100)
-    command = models.CharField(default="ls", max_length=100)
+    command = models.CharField(default=ALARM_SCRIPT_PATH, max_length=100)
 
 
 class AlarmScheduleSerializer(serializers.Serializer):
@@ -23,6 +25,7 @@ class AlarmScheduleSerializer(serializers.Serializer):
     day_of_week = serializers.CharField(max_length=100)
     command = serializers.CharField(max_length=100)
 
+    """ validates user provided information during serialization """
     def validate_minute(self, val):
         minutes = [str(x) for x in range(0, 61)]
         minutes.append("*")
@@ -38,7 +41,7 @@ class AlarmScheduleSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid input for scheduling an \
                                               alarm task")
         return val
-    
+
     def validate_day_of_week(self, val):
         days = [str(x) for x in range(0, 7)]
         days.append("*")
@@ -46,10 +49,11 @@ class AlarmScheduleSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid input for scheduling an \
                                               alarm task")
         return val
-    
+
+    """ used to craete and update directly using this serializer """
     def create(self, validated_data):
         return AlarmSchedule.objects.create(**validated_data)
-    
+
     def update(self, instance, validated_data):
         instance.minute = validated_data.get("minute", instance.minute)
         instance.hour = validated_data.get("hour", instance.hour)
