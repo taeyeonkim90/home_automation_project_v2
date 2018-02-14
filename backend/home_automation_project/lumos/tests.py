@@ -8,15 +8,13 @@ from .models import AlarmSchedule, AlarmScheduleSerializer
 
 
 class AlarmTestCase(TestCase):
-    def setUp(self):
-        pass
-
     def test_alarm_serializer(self):
         """Test Django REST serializer. Model -> JSON"""
         model = AlarmSchedule(minute="*", hour="*", day_of_week="*")
         serializer = AlarmScheduleSerializer(model)
         json = JSONRenderer().render(serializer.data)
-        expected_json = b'{"minute":"*","hour":"*","day_of_week":"*","command":"ls"}'
+        expected_json = b'{"minute":"*","hour":"*","day_of_week":"*",\
+                          "command":"ls"}'
         self.assertEqual(json, expected_json)
     
     def test_alarm_deserializer(self):
@@ -27,7 +25,8 @@ class AlarmTestCase(TestCase):
         data = JSONParser().parse(stream)
 
         serializer = AlarmScheduleSerializer(data=data)
-        self.assertTrue(serializer.is_valid(), "Serializer validation has failed")
+        self.assertTrue(serializer.is_valid(), 
+                        "Serializer validation has failed")
 
         model = AlarmSchedule(**serializer.data)
         self.assertEqual(model.minute, "1")
@@ -40,4 +39,22 @@ class AlarmTestCase(TestCase):
         data = JSONParser().parse(stream)
         
         serializer = AlarmScheduleSerializer(data=data)
-        self.assertFalse(serializer.is_valid(), "Serializer validation has failed")
+        self.assertFalse(serializer.is_valid(), 
+                         "Serializer validation has failed")
+
+
+class AlarmSericeTestCase(TestCase):
+    def test_create(self):
+        pass
+
+    def test_read(self):
+        pass
+    
+    def test_read_all(self):
+        pass
+    
+    def test_update(self):
+        pass
+
+    def test_delete(self):
+        pass
