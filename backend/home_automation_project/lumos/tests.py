@@ -12,10 +12,11 @@ from .services import AlarmService, CronJobService
 
 class JSONGenerator:
     @classmethod
-    def get_alarm(cls, minute="*", hour="*", day_of_week="*", command="*"):
+    def get_alarm(cls, minute="*", hour="*", day_of_week="*", 
+                  command="*", active="false"):
         template = '{{"id":null,"minute":"{}","hour":"{}",' + \
-                      '"day_of_week":"{}","command":"{}"}}'
-        formatted = template.format(minute, hour, day_of_week, command)
+                      '"day_of_week":"{}","command":"{}","active":{}}}'
+        formatted = template.format(minute, hour, day_of_week, command, active)
         return formatted.encode()
 
     @classmethod
@@ -37,7 +38,7 @@ class AlarmTestCase(TestCase):
     def test_alarm_deserializer(self):
         """Test Django REST serializer. JSON -> Model"""
         # positive case
-        json = JSONGenerator.get_alarm("1", "2", "3", "ls")
+        json = JSONGenerator.get_alarm("1", "2", "3,4", "ls")
         data = JSONGenerator.json_to_data(json)
 
         serializer = AlarmScheduleSerializer(data=data)
@@ -47,7 +48,7 @@ class AlarmTestCase(TestCase):
         model = AlarmSchedule(**serializer.data)
         self.assertEqual(model.minute, "1")
         self.assertEqual(model.hour, "2")
-        self.assertEqual(model.day_of_week, "3")
+        self.assertEqual(model.day_of_week, "3,4")
 
         # negative case
         json = JSONGenerator.get_alarm("-1", "25", "8", "ls")
@@ -163,10 +164,12 @@ class CronJobServiceTestCase(TestCase):
         cron.write()
 
     def test_update_all(self):
-        model1 = AlarmSchedule()
-        model2 = AlarmSchedule()
+        model1 = AlarmSchedule(active=True)
+        model2 = AlarmSchedule(active=True)
+        model3 = AlarmSchedule(active=False)
         model1.save()
         model2.save()
+        model3.save()
         self.cron_service.update_all()
         # self.cron_service.print_all()
 

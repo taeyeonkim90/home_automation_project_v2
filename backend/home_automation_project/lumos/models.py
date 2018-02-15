@@ -16,6 +16,7 @@ class AlarmSchedule(models.Model):
     hour = models.CharField(default="*", max_length=100)
     day_of_week = models.CharField(default="*", max_length=100)
     command = models.CharField(default=ALARM_SCRIPT_PATH, max_length=100)
+    active = models.BooleanField(default=False)
 
 
 class AlarmScheduleSerializer(serializers.Serializer):
@@ -24,30 +25,31 @@ class AlarmScheduleSerializer(serializers.Serializer):
     hour = serializers.CharField(max_length=100)
     day_of_week = serializers.CharField(max_length=100)
     command = serializers.CharField(max_length=100)
+    active = serializers.BooleanField()
+
+    VALIDATION_ERROR_MSG = "Invalid input for scheduling an alarm task"
 
     """ validates user provided information during serialization """
     def validate_minute(self, val):
-        minutes = [str(x) for x in range(0, 61)]
-        minutes.append("*")
+        minutes = {str(x) for x in range(0, 61)}
+        minutes.add("*")
         if val not in minutes:
-            raise serializers.ValidationError("Invalid input for scheduling an \
-                                              alarm task")
+            raise serializers.ValidationError(self.VALIDATION_ERROR_MSG)
         return val
 
     def validate_hour(self, val):
-        hours = [str(x) for x in range(0, 25)]
-        hours.append("*")
+        hours = {str(x) for x in range(0, 25)}
+        hours.add("*")
         if val not in hours:
-            raise serializers.ValidationError("Invalid input for scheduling an \
-                                              alarm task")
+            raise serializers.ValidationError(self.VALIDATION_ERROR_MSG)
         return val
 
     def validate_day_of_week(self, val):
-        days = [str(x) for x in range(0, 7)]
-        days.append("*")
-        if val not in days:
-            raise serializers.ValidationError("Invalid input for scheduling an \
-                                              alarm task")
+        days = {str(x) for x in range(0, 7)}
+        if val != "*":
+            for day in val.split(","):
+                if day not in days:
+                    raise serializers.ValidationError(self.VALIDATION_ERROR_MSG)
         return val
 
     """ used to craete and update directly using this serializer """
