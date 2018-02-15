@@ -1,2 +1,3 @@
-**/__pycache__
+lumos/__pycache__/
+home_automation_project/__pycache__/
 db.sqlite3

@@ -24,6 +24,8 @@ class CronJobService:
     def _create_jobs(self):
         alarms = AlarmSchedule.objects.all()
         for alarm in alarms:
+            if not alarm.active:
+                continue
             time = self._serialize_alarm_time(alarm)
             job = self.cron.new(command=alarm.command, comment=str(alarm.id))
             job.setall(time)
