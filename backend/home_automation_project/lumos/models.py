@@ -62,5 +62,6 @@ class AlarmScheduleSerializer(serializers.Serializer):
         instance.day_of_week = validated_data.get("day_of_week",
                                                   instance.day_of_week)
         instance.command = validated_data.get("command", instance.command)
+        instance.active = validated_data.get("active", instance.active)
         instance.save()
         return instance
