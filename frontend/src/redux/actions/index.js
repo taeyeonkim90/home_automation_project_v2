@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { toast } from 'react-toastify';
 
 import {BASE_URL} from '../../config'
 
@@ -57,30 +58,34 @@ export const actionCreator = {
         axiosCreator().post('/api/alarms/', alarm)
             .then(response => {
                 dispatch(addAlarm(response.data))
+                toast.success("created a new alarm")
             })
-            .catch(error => console.log("could not create an alarm"))
+            .catch(error => toast.error("could not create an alarm"))
     },
     readAlarms: () => (dispatch, getState) => {
         axiosCreator().get('/api/alarms/')
             .then(response => {
                 dispatch(readAlarms(response.data))
+                toast.success("finished loading all alarms")
             })
-            .catch(error => console.log("could not read alarms"))
+            .catch(error => toast.error("could not read alarms"))
     },
     updateAlarm: (id, alarm) => (dispatch, getState) => {
         let url = `/api/alarms/${id}/`
         axiosCreator().put(url, alarm)
             .then(response => {
                 dispatch(updateAlarm(id, response.data))
+                toast.success("updated an alarm")
             })
-            .catch(error => console.log("could not update an alarm"))
+            .catch(error => toast.error("could not update an alarm"))
     },
     deleteAlarm: (id) => (dispatch, getState) => {
         let url = `/api/alarms/${id}/`
         axiosCreator().delete(url)
             .then(response => {
                 dispatch(deleteAlarm(id))
+                toast.success("deleted an alarm")
             })
-            .catch(error => console.log("could not delete an alarm"))
+            .catch(error => toast.error("could not delete an alarm"))
     }
 }

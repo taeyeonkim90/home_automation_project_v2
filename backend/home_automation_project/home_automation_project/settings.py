@@ -28,7 +28,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:3000',
+    'localhost:3000',   # npm run port
+    'localhost:5000',   # npm serve port
 )
 
 # Application definition
