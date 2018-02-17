@@ -7,9 +7,21 @@ const style = {
 };
 
 class NewAlarmButton extends Component {
+  createNewAlarm = () => {
+    const defaultAlarm = {
+      "minute" : "0",
+      "hour" : "0",
+      "day_of_week" : "*",
+      "active" : false
+    }
+    this.props.createAlarm(defaultAlarm)
+  }
+
   render() {
     return (
-        <FloatingActionButton secondary={true} mini={true} style={style}><ContentAdd /></FloatingActionButton>
+        <FloatingActionButton secondary={true} mini={true} style={style} onClick={this.createNewAlarm}>
+          <ContentAdd />
+        </FloatingActionButton>
     );
   }
 }

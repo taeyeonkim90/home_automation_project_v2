@@ -23,23 +23,12 @@ class AlarmContainer extends Component {
     )
   }
 
-  createNewAlarm = () => {
-    const defaultAlarm = {
-      "minute" : "0",
-      "hour" : "0",
-      "day_of_week" : "*",
-      "active" : false
-    }
-    this.props.createAlarm(defaultAlarm)
-  }
-
   render() {
     return (
       <div>
         <AppBar
             title="Sunrise IoT Controller"
-            onClick={this.createNewAlarm}
-            iconElementRight={<NewAlarmButton/>} // need to pass create function
+            iconElementRight={<NewAlarmButton createAlarm={this.props.createAlarm}/>} // need to pass create function
         />
         {this.renderAlarms()}
       </div>
