@@ -21,11 +21,11 @@ class AlarmSchedule(models.Model):
 
 class AlarmScheduleSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
-    minute = serializers.CharField(max_length=100)
-    hour = serializers.CharField(max_length=100)
-    day_of_week = serializers.CharField(max_length=100)
-    command = serializers.CharField(max_length=100)
-    active = serializers.BooleanField()
+    minute = serializers.CharField(default="*", max_length=100)
+    hour = serializers.CharField(default="*", max_length=100)
+    day_of_week = serializers.CharField(default="*", max_length=100)
+    command = serializers.CharField(default=ALARM_SCRIPT_PATH, max_length=100)
+    active = serializers.BooleanField(default=False)
 
     VALIDATION_ERROR_MSG = "Invalid input for scheduling an alarm task"
 
@@ -38,7 +38,7 @@ class AlarmScheduleSerializer(serializers.Serializer):
         return val
 
     def validate_hour(self, val):
-        hours = {str(x) for x in range(0, 25)}
+        hours = {str(x) for x in range(0, 24)}
         hours.add("*")
         if val not in hours:
             raise serializers.ValidationError(self.VALIDATION_ERROR_MSG)
