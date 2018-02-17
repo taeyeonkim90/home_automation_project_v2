@@ -52,35 +52,35 @@ const axiosCreator = () => {
 }
 
 // asynchronous action creators
-export const actionCreators = {
+export const actionCreator = {
     createAlarm: (alarm) => (dispatch, getState) => {
-        let fetchTask = axiosCreator().post('/api/alarms/', alarm)
+        axiosCreator().post('/api/alarms/', alarm)
             .then(response => {
                 dispatch(addAlarm(response.data))
             })
-            .catch(error => {})
+            .catch(error => console.log("could not create an alarm"))
     },
     readAlarms: () => (dispatch, getState) => {
-        let fetchTask = axiosCreator().get('/api/alarms/')
+        axiosCreator().get('/api/alarms/')
             .then(response => {
                 dispatch(readAlarms(response.data))
             })
-            .catch(error => {})
+            .catch(error => console.log("could not read alarms"))
     },
     updateAlarm: (id, alarm) => (dispatch, getState) => {
         let url = `/api/alarms/${id}/`
-        let fetchTask = axiosCreator().put(url, alarm)
+        axiosCreator().put(url, alarm)
             .then(response => {
                 dispatch(updateAlarm(id, response.data))
             })
-            .catch(error => {})
+            .catch(error => console.log("could not update an alarm"))
     },
     deleteAlarm: (id) => (dispatch, getState) => {
         let url = `/api/alarms/${id}/`
-        let fetchTask = axiosCreator().delete(url)
+        axiosCreator().delete(url)
             .then(response => {
                 dispatch(deleteAlarm(id))
             })
-            .catch(error => {})
+            .catch(error => console.log("could not delete an alarm"))
     }
 }
