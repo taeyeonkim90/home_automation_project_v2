@@ -2,7 +2,7 @@ from django.db import models
 from rest_framework import serializers
 
 
-ALARM_SCRIPT_PATH = "ls"
+ALARM_SCRIPT_PATH = "/home/pi/Projects/home_automation_project_v2/backend/home_automation_project/scripts/run_led.sh"
 
 
 class AlarmSchedule(models.Model):
